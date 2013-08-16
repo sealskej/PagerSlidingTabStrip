@@ -159,7 +159,11 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 		textAllCaps = a.getBoolean(R.styleable.PagerSlidingTabStrip_textAllCaps, textAllCaps);
         CharSequence indicatorPositionText = a.getText(R.styleable.PagerSlidingTabStrip_indicatorPosition);
         if (indicatorPositionText != null) {
-            indicatorPosition = IndicatorPosition.valueOf(indicatorPositionText.toString().toUpperCase());
+            try {
+                indicatorPosition = IndicatorPosition.valueOf(indicatorPositionText.toString().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("PagerSlidingTabStrip indicatorPosition must be up or down!");
+            }
         }
 
 		a.recycle();
