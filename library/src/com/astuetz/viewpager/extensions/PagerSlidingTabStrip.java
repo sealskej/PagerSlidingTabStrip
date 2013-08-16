@@ -16,8 +16,6 @@
 
 package com.astuetz.viewpager.extensions;
 
-import java.util.Locale;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -41,11 +39,17 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.Locale;
+
 public class PagerSlidingTabStrip extends HorizontalScrollView {
 
 	public interface IconTabProvider {
 		public int getPageIconResId(int position);
 	}
+
+    public enum IndicatorPosition {
+        UP, DOWN;
+    }
 
 	// @formatter:off
 	private static final int[] ATTRS = new int[] {
@@ -97,6 +101,8 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 	private int tabBackgroundResId = R.drawable.background_tab;
 
 	private Locale locale;
+
+    private IndicatorPosition indicatorPosition = IndicatorPosition.DOWN;
 
 	public PagerSlidingTabStrip(Context context) {
 		this(context, null);
@@ -151,6 +157,10 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 		shouldExpand = a.getBoolean(R.styleable.PagerSlidingTabStrip_shouldExpand, shouldExpand);
 		scrollOffset = a.getDimensionPixelSize(R.styleable.PagerSlidingTabStrip_scrollOffset, scrollOffset);
 		textAllCaps = a.getBoolean(R.styleable.PagerSlidingTabStrip_textAllCaps, textAllCaps);
+        CharSequence indicatorPositionText = a.getText(R.styleable.PagerSlidingTabStrip_indicatorPosition);
+        if (indicatorPositionText != null) {
+            indicatorPosition = IndicatorPosition.valueOf(indicatorPositionText.toString().toUpperCase());
+        }
 
 		a.recycle();
 
@@ -372,7 +382,15 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 			lineRight = (currentPositionOffset * nextTabRight + (1f - currentPositionOffset) * lineRight);
 		}
 
-		canvas.drawRect(lineLeft, height - indicatorHeight, lineRight, height, rectPaint);
+        int top, bottom;
+        if (indicatorPosition == IndicatorPosition.UP) {
+            top = 0;
+            bottom = indicatorHeight;
+        } else {
+            top = height - indicatorHeight;
+            bottom = height;
+        }
+		canvas.drawRect(lineLeft, top, lineRight, bottom, rectPaint);
 
 		// draw underline
 
@@ -613,4 +631,11 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 		};
 	}
 
+    public IndicatorPosition getIndicatorPosition() {
+        return indicatorPosition;
+    }
+
+    public void setIndicatorPosition(IndicatorPosition indicatorPosition) {
+        this.indicatorPosition = indicatorPosition;
+    }
 }
